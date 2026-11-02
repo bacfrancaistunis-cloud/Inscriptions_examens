@@ -407,6 +407,52 @@ function afficherMessage(message, type) {
 }
 
 
+// EMPECHER LES DOUBLONS ENTRE LES LISTES DE SPECIALITES
+
+const selectsSpecialites = [
+  document.getElementById("specialite1"),
+  document.getElementById("specialite2"),
+  document.getElementById("specialite3")
+];
+
+function mettreAJourSpecialites() {
+
+  // Spécialités actuellement choisies
+  const choisies = selectsSpecialites
+    .map(select => select.value)
+    .filter(valeur => valeur !== "");
+
+  selectsSpecialites.forEach(select => {
+
+    Array.from(select.options).forEach(option => {
+
+      if (option.value === "") return;
+
+      // Une option est cachée si elle est choisie dans une AUTRE liste
+      const prisAilleurs =
+        choisies.includes(option.value) &&
+        select.value !== option.value;
+
+      option.disabled = prisAilleurs;
+      option.hidden = prisAilleurs;
+
+    });
+
+  });
+
+}
+
+selectsSpecialites.forEach(select => {
+  select.addEventListener("change", mettreAJourSpecialites);
+});
+
+formulaire.addEventListener("reset", function() {
+  setTimeout(mettreAJourSpecialites, 0);
+});
+
+mettreAJourSpecialites();
+
+
 // VERIFICATION DES SPECIALITES
 
 function verifierSpecialites() {
@@ -564,7 +610,7 @@ formulaire.addEventListener("submit", async function(event) {
 
     afficherMessage(
       "Votre demande a été transmise.",
-      "info"
+      "succes"
     );
 
   }
