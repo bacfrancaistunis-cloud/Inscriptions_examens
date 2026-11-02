@@ -678,7 +678,6 @@ button.oeil:hover:not(:disabled) { background: var(--bleu-clair); transform: non
     <select id="voie" name="voie" required>
       <option value="">Choisir une voie</option>
       <option value="Générale">Générale</option>
-      <option value="Technologique">Technologique (STMG)</option>
     </select>
 
     <!-- SPECIALITES -->
@@ -1168,11 +1167,9 @@ formulaire.addEventListener("submit", async function(event) {
 
     // ENVOI VERS LE NOUVEAU GOOGLE APPS SCRIPT
 
-    await fetch(SCRIPT_URL, {
+    const reponse = await fetch(SCRIPT_URL, {
 
       method: "POST",
-
-      mode: "no-cors",
 
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
@@ -1182,11 +1179,21 @@ formulaire.addEventListener("submit", async function(event) {
 
     });
 
+    // LECTURE DE LA REPONSE DU SERVEUR :
+    // le message vert n'apparaît que si le script confirme l'enregistrement.
 
-    // ATTENTION :
-    // EN MODE NO-CORS, LE NAVIGATEUR NE PEUT PAS
-    // LIRE LA REPONSE DU SERVEUR.
-    // CE MESSAGE NE CONFIRME DONC PAS L'ENREGISTREMENT.
+    const texte = await reponse.text();
+    let resultatServeur = null;
+
+    try {
+      resultatServeur = JSON.parse(texte);
+    } catch (e) {
+      throw new Error("Réponse inattendue du service d'inscription");
+    }
+
+    if (!resultatServeur.ok) {
+      throw new Error(resultatServeur.erreur || "Enregistrement refusé");
+    }
 
     afficherMessage(
       "Votre demande a été transmise.",
@@ -1197,8 +1204,10 @@ formulaire.addEventListener("submit", async function(event) {
 
   catch(error) {
 
+    console.error(error);
+
     afficherMessage(
-      "Erreur lors de la transmission. Veuillez vérifier votre connexion et réessayer.",
+      "Erreur lors de la transmission. Veuillez vérifier votre connexion et réessayer. (Détail : " + error.message + ")",
       "erreur"
     );
 
