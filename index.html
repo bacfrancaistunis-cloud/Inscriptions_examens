@@ -7,156 +7,458 @@
 <title>Inscriptions aux examens | BFT Education Group</title>
 
 <style>
-* {
-  box-sizing: border-box;
+:root {
+  --bleu: #183b68;
+  --bleu-2: #2874c7;
+  --bleu-clair: #edf5ff;
+  --texte: #263247;
+  --gris: #778399;
+  --bord: #d9e0ea;
+  --vert: #176b40;
+  --vert-clair: #e8f7ef;
+  --rouge: #b42318;
+  --rouge-clair: #fff0f0;
+  --ease: cubic-bezier(.22, 1, .36, 1);
 }
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  padding: 25px 15px;
-  font-family: Arial, sans-serif;
-  background: #f1f4f9;
-  color: #263247;
+  padding: 25px 15px 50px;
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  background:
+    radial-gradient(900px 400px at 10% -10%, #dbe8fb 0%, transparent 60%),
+    radial-gradient(700px 400px at 100% 0%, #e6f0ff 0%, transparent 55%),
+    #f1f4f9;
+  color: var(--texte);
   line-height: 1.6;
+  min-height: 100vh;
 }
+
+/* ---------- CARTE PRINCIPALE ---------- */
 
 .container {
   max-width: 680px;
   margin: 20px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 5px 25px #0000000d;
+  background: #fff;
+  padding: 36px 32px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px #183b6817;
+  animation: apparition .7s var(--ease) both;
+}
+
+@keyframes apparition {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.badge {
+  display: block;
+  width: max-content;
+  margin: 0 auto 14px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--bleu-clair);
+  color: var(--bleu-2);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
 h1 {
-  color: #183b68;
+  color: var(--bleu);
   text-align: center;
-  font-size: 25px;
+  font-size: 27px;
+  line-height: 1.25;
+  margin: 0;
 }
 
 .subtitle {
   text-align: center;
-  color: #778399;
-  margin-bottom: 25px;
+  color: var(--gris);
+  margin: 6px 0 28px;
 }
 
+h3 {
+  color: var(--bleu);
+  margin: 30px 0 12px;
+  font-size: 18px;
+}
+
+/* ---------- INDICATEUR D'ETAPES ---------- */
+
+.steps {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gris);
+  transition: color .4s;
+}
+
+.step span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e9eef6;
+  color: var(--gris);
+  font-weight: 700;
+  transition: background .4s, color .4s, transform .4s var(--ease);
+}
+
+.step.active { color: var(--bleu); }
+.step.active span {
+  background: var(--bleu);
+  color: #fff;
+  box-shadow: 0 0 0 5px #183b681f;
+}
+
+.step.done { color: var(--vert); }
+.step.done span {
+  background: var(--vert);
+  color: #fff;
+  font-size: 0;
+}
+.step.done span::after {
+  content: "✓";
+  font-size: 16px;
+}
+
+.ligne {
+  flex: 1;
+  height: 3px;
+  margin: 0 12px;
+  border-radius: 3px;
+  background: #e9eef6;
+  position: relative;
+  overflow: hidden;
+}
+.ligne::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--vert);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .7s var(--ease);
+}
+.ligne.pleine::after { transform: scaleX(1); }
+
+/* ---------- BLOCS D'INFORMATION ---------- */
+
 .notice {
-  background: #edf5ff;
-  border-left: 4px solid #2874c7;
-  padding: 17px;
-  border-radius: 7px;
+  background: var(--bleu-clair);
+  border-left: 4px solid var(--bleu-2);
+  padding: 16px 18px;
+  border-radius: 10px;
   margin: 20px 0;
 }
 
 .instruction {
+  display: flex;
+  gap: 14px;
   background: #f8f9fc;
   border: 1px solid #e3e8ef;
-  padding: 15px;
-  border-radius: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
   margin: 12px 0;
+  transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
+  animation: apparition .6s var(--ease) both;
+}
+.instruction:nth-of-type(1) { animation-delay: .15s; }
+.instruction:nth-of-type(2) { animation-delay: .25s; }
+.instruction:nth-of-type(3) { animation-delay: .35s; }
+
+.instruction:hover {
+  transform: translateY(-2px);
+  border-color: #c3d4ea;
+  box-shadow: 0 6px 18px #183b6812;
 }
 
-h3 {
-  color: #183b68;
+.instruction .num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--bleu);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
 }
+.instruction p { margin: 2px 0 0; color: #4a566b; font-size: 14.5px; }
 
-.button-link {
-  display: block;
-  text-align: center;
-  background: #e9eff8;
-  padding: 14px;
-  border-radius: 8px;
-  color: #183b68;
-  font-weight: bold;
-  text-decoration: none;
-  margin: 20px 0;
-}
+/* ---------- BOUTONS ---------- */
 
-.button-link:hover {
-  background: #dce8f7;
-}
-
+.button-link,
 button {
+  position: relative;
+  display: block;
   width: 100%;
   padding: 15px;
   border: none;
-  border-radius: 8px;
-  background: #183b68;
-  color: white;
+  border-radius: 12px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font-family: inherit;
+  transition: transform .25s var(--ease), box-shadow .25s, background .25s;
+}
+
+.button-link {
+  background: var(--bleu-clair);
+  color: var(--bleu);
+  margin: 20px 0;
+  border: 2px solid #cfe0f7;
+}
+.button-link::after {
+  content: "→";
+  display: inline-block;
+  margin-left: 8px;
+  transition: transform .3s var(--ease);
+}
+.button-link:hover { background: #dce8f7; transform: translateY(-2px); }
+.button-link:hover::after { transform: translateX(6px); }
+
+button {
+  background: linear-gradient(135deg, var(--bleu), #24558e);
+  color: #fff;
   margin-top: 15px;
+  box-shadow: 0 8px 20px #183b6833;
+}
+button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 26px #183b6840; }
+button:active:not(:disabled) { transform: scale(.98); }
+
+button:disabled { opacity: .75; cursor: not-allowed; }
+
+button.loading::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  vertical-align: -2px;
+  border: 2px solid #ffffff55;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: tourne .7s linear infinite;
+}
+@keyframes tourne { to { transform: rotate(360deg); } }
+
+#ouvrirFormulaire.fait {
+  background: var(--vert-clair);
+  color: var(--vert);
+  box-shadow: none;
 }
 
-button:hover {
-  background: #24558e;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+/* ---------- CHAMPS ---------- */
 
 input, select {
   width: 100%;
-  padding: 13px;
-  margin: 8px 0 18px;
-  border: 1px solid #d5dce6;
-  border-radius: 7px;
+  padding: 13px 14px;
+  margin: 6px 0 18px;
+  border: 1.5px solid var(--bord);
+  border-radius: 10px;
   font-size: 15px;
-  background: white;
+  font-family: inherit;
+  background: #fff;
+  color: var(--texte);
+  transition: border-color .25s, box-shadow .25s, background .25s;
 }
 
-label {
-  font-weight: bold;
-  font-size: 14px;
+input:hover, select:hover { border-color: #b9c6d8; }
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--bleu-2);
+  box-shadow: 0 0 0 4px #2874c726;
 }
 
-.aide {
-  color: #778399;
+input:user-valid, select:user-valid { border-color: #7cc9a0; }
+input:user-invalid, select:user-invalid {
+  border-color: var(--rouge);
+  background: #fffafa;
+}
+
+label { font-weight: 700; font-size: 14px; }
+
+/* ---------- MOT DE PASSE ---------- */
+
+.champ-mdp { position: relative; }
+.champ-mdp input { padding-right: 96px; margin-bottom: 10px; }
+
+button.oeil {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: auto;
+  margin: 0;
+  padding: 0 12px;
+  height: 46px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bleu-2);
   font-size: 13px;
-  margin-top: -12px;
-  margin-bottom: 18px;
+  box-shadow: none;
 }
+button.oeil:hover:not(:disabled) { background: var(--bleu-clair); transform: none; box-shadow: none; }
+
+.regles {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  background: #f8f9fc;
+  border: 1px solid #e3e8ef;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: var(--gris);
+}
+.regles li { display: flex; gap: 8px; margin: 3px 0; transition: color .3s; }
+.regles li::before {
+  content: "○";
+  flex: none;
+  width: 16px;
+  text-align: center;
+  transition: transform .4s var(--ease);
+}
+.regles li.ok { color: var(--vert); font-weight: 600; }
+.regles li.ok::before { content: "✓"; animation: pop .4s var(--ease) both; }
+.regles code {
+  font-family: Consolas, monospace;
+  letter-spacing: .08em;
+  word-break: break-all;
+}
+
+/* ---------- FORMULAIRE ---------- */
 
 #formulaire {
   display: none;
-  margin-top: 30px;
+  margin-top: 34px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--bord);
 }
+
+#formulaire.ouvert {
+  display: block;
+  animation: ouverture .7s var(--ease) both;
+}
+
+@keyframes ouverture {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.progression { margin: 22px 0 6px; }
+.progression-texte {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--gris);
+  font-weight: 600;
+}
+.barre {
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 8px;
+  background: #e9eef6;
+  overflow: hidden;
+}
+.barre i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--bleu-2), #34b37a);
+  transition: width .5s var(--ease);
+}
+
+.compteur {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e9eef6;
+  color: var(--gris);
+  font-size: 13px;
+  font-weight: 700;
+  vertical-align: 2px;
+  transition: background .3s, color .3s;
+}
+.compteur.complet { background: var(--vert-clair); color: var(--vert); }
+
+/* ---------- RESULTAT ---------- */
 
 #resultat {
   display: none;
   margin-top: 18px;
-  padding: 14px;
-  border-radius: 8px;
+  padding: 16px;
+  border-radius: 12px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
-#resultat.succes {
-  display: block;
-  background: #e8f7ef;
-  color: #176b40;
-}
-
-#resultat.erreur {
-  display: block;
-  background: #fff0f0;
-  color: #b42318;
-}
-
+#resultat.succes,
+#resultat.erreur,
 #resultat.info {
   display: block;
-  background: #edf5ff;
-  color: #183b68;
+  animation: pop .5s var(--ease) both;
 }
+
+#resultat.succes { background: var(--vert-clair); color: var(--vert); }
+#resultat.erreur { background: var(--rouge-clair); color: var(--rouge); animation-name: secousse; animation-duration: .45s; }
+#resultat.info   { background: var(--bleu-clair); color: var(--bleu); }
+
+#resultat.succes::before {
+  content: "✓";
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background: var(--vert);
+  color: #fff;
+  font-size: 22px;
+  animation: pop .6s .1s var(--ease) both;
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes secousse {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+/* ---------- PIED DE PAGE ---------- */
 
 .footer {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 34px;
   color: #8993a2;
   font-size: 13px;
   border-top: 1px solid #e9edf4;
@@ -164,13 +466,18 @@ label {
 }
 
 @media (max-width: 500px) {
-  .container {
-    padding: 22px 17px;
-    margin: 10px auto;
-  }
+  .container { padding: 24px 17px; margin: 10px auto; border-radius: 16px; }
+  h1 { font-size: 22px; }
+  .step { font-size: 0; gap: 0; }
+  .step span { font-size: 14px; }
+  .step.done span { font-size: 0; }
+}
 
-  h1 {
-    font-size: 21px;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 </style>
@@ -180,11 +487,21 @@ label {
 
 <div class="container">
 
+  <span class="badge">BFT Education Group</span>
+
   <h1>Inscriptions aux examens</h1>
 
   <div class="subtitle">
     Première partie du Baccalauréat français
   </div>
+
+  <!-- INDICATEUR D'ETAPES -->
+
+  <ol class="steps" aria-label="Progression">
+    <li class="step active" id="etape1"><span>1</span>Compte Cyclades</li>
+    <li class="ligne" id="ligne" aria-hidden="true"></li>
+    <li class="step" id="etape2"><span>2</span>Formulaire</li>
+  </ol>
 
   <!-- ETAPE 1 -->
 
@@ -199,25 +516,34 @@ label {
   <h3>Consignes importantes</h3>
 
   <div class="instruction">
-    <strong>1. Nom et prénom</strong>
-    <p>
-      Ils doivent être identiques à ceux figurant
-      sur l'extrait de naissance ou le passeport.
-    </p>
+    <div class="num">1</div>
+    <div>
+      <strong>Nom et prénom</strong>
+      <p>
+        Ils doivent être identiques à ceux figurant
+        sur l'extrait de naissance ou le passeport.
+      </p>
+    </div>
   </div>
 
   <div class="instruction">
-    <strong>2. Nom d'usage</strong>
-    <p>Laissez cette case vide.</p>
+    <div class="num">2</div>
+    <div>
+      <strong>Nom d'usage</strong>
+      <p>Laissez cette case vide.</p>
+    </div>
   </div>
 
   <div class="instruction">
-    <strong>3. Lieu de naissance</strong>
-    <p>
-      Pour les candidats nés en Tunisie,
-      laissez vide la case
-      « Département, DOM ou COM de naissance ».
-    </p>
+    <div class="num">3</div>
+    <div>
+      <strong>Lieu de naissance</strong>
+      <p>
+        Pour les candidats nés en Tunisie,
+        laissez vide la case
+        « Département, DOM ou COM de naissance ».
+      </p>
+    </div>
   </div>
 
   <!-- BOUTON CYCLADES -->
@@ -245,7 +571,15 @@ label {
 
   <!-- FORMULAIRE -->
 
-  <form id="formulaire">
+  <form id="formulaire" novalidate>
+
+    <div class="progression">
+      <div class="progression-texte">
+        <span>Progression du formulaire</span>
+        <span id="progressionPct">0 %</span>
+      </div>
+      <div class="barre"><i id="progressionBarre"></i></div>
+    </div>
 
     <h3>Informations du candidat</h3>
 
@@ -255,6 +589,7 @@ label {
       name="nom"
       type="text"
       placeholder="Nom et prénom du candidat"
+      autocomplete="name"
       required>
 
     <label for="adresse">Adresse de résidence *</label>
@@ -263,6 +598,7 @@ label {
       name="adresse"
       type="text"
       placeholder="Adresse complète du candidat"
+      autocomplete="street-address"
       required>
 
     <label for="voie">Voie *</label>
@@ -274,7 +610,7 @@ label {
 
     <!-- SPECIALITES -->
 
-    <h3>Choix des matières de spécialité</h3>
+    <h3>Choix des matières de spécialité <span class="compteur" id="compteur">0/3</span></h3>
 
     <div class="notice">
       Veuillez sélectionner exactement trois matières
@@ -317,21 +653,39 @@ label {
       <option value="LLCER">LLCER</option>
     </select>
 
+    <h3>Votre compte Cyclades</h3>
+
     <label for="email">Adresse e-mail Cyclades *</label>
     <input
       id="email"
       name="email"
       type="email"
       placeholder="exemple@email.com"
+      autocomplete="email"
       required>
 
-    <label for="identifiant">Identifiant Cyclades *</label>
-    <input
-      id="identifiant"
-      name="identifiant"
-      type="text"
-      placeholder="Votre identifiant Cyclades"
-      required>
+    <label for="motdepasse">Mot de passe Cyclades *</label>
+    <div class="champ-mdp">
+      <input
+        id="motdepasse"
+        name="motdepasse"
+        type="password"
+        placeholder="Votre mot de passe Cyclades"
+        autocomplete="off"
+        maxlength="30"
+        required>
+      <button type="button" class="oeil" id="oeil" aria-label="Afficher le mot de passe">Afficher</button>
+    </div>
+
+    <ul class="regles" id="regles">
+      <li data-r="longueur">12 à 30 caractères</li>
+      <li data-r="maj">Au moins 1 majuscule</li>
+      <li data-r="min">Au moins 1 minuscule</li>
+      <li data-r="chiffre">Au moins 1 chiffre</li>
+      <li data-r="special">Au moins 1 caractère spécial :
+        <code>' # ! $ % &amp; ( ) * + , - . / : ; &lt; = &gt; ? @ [ ] ^ _ { | } ~</code>
+      </li>
+    </ul>
 
     <div class="notice">
      Une fois ces informations transmises, nous procéderons à l'inscription du candidat. Le récapitulatif vous sera envoyé par e-mail, accompagné des prochaines étapes à suivre.
@@ -387,12 +741,23 @@ const resultat = document.getElementById("resultat");
 
 boutonOuvrir.addEventListener("click", function() {
 
-  formulaire.style.display = "block";
+  formulaire.classList.add("ouvert");
+
+  // Indicateur d'étapes : étape 1 terminée, étape 2 active
+  document.getElementById("etape1").classList.replace("active", "done");
+  document.getElementById("ligne").classList.add("pleine");
+  document.getElementById("etape2").classList.add("active");
+
+  boutonOuvrir.classList.add("fait");
+  boutonOuvrir.textContent = "Compte Cyclades créé ✓";
 
   formulaire.scrollIntoView({
     behavior: "smooth",
     block: "start"
   });
+
+  // Place le curseur dans le premier champ
+  setTimeout(() => document.getElementById("nom").focus({ preventScroll: true }), 600);
 
 });
 
@@ -401,8 +766,16 @@ boutonOuvrir.addEventListener("click", function() {
 
 function afficherMessage(message, type) {
 
+  // Relance l'animation à chaque nouveau message
+  resultat.className = "";
+  void resultat.offsetWidth;
+
   resultat.className = type;
   resultat.textContent = message;
+
+  if (type === "erreur") {
+    resultat.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 
 }
 
@@ -440,6 +813,11 @@ function mettreAJourSpecialites() {
 
   });
 
+  // Compteur « x/3 »
+  const compteur = document.getElementById("compteur");
+  compteur.textContent = choisies.length + "/3";
+  compteur.classList.toggle("complet", choisies.length === 3);
+
 }
 
 selectsSpecialites.forEach(select => {
@@ -447,10 +825,31 @@ selectsSpecialites.forEach(select => {
 });
 
 formulaire.addEventListener("reset", function() {
-  setTimeout(mettreAJourSpecialites, 0);
+  setTimeout(() => {
+    mettreAJourSpecialites();
+    mettreAJourProgression();
+  }, 0);
 });
 
 mettreAJourSpecialites();
+
+
+// BARRE DE PROGRESSION DU FORMULAIRE
+
+const champsRequis = Array.from(formulaire.querySelectorAll("[required]"));
+
+function mettreAJourProgression() {
+
+  const remplis = champsRequis.filter(c => c.value.trim() !== "").length;
+  const pct = Math.round((remplis / champsRequis.length) * 100);
+
+  document.getElementById("progressionBarre").style.width = pct + "%";
+  document.getElementById("progressionPct").textContent = pct + " %";
+
+}
+
+formulaire.addEventListener("input", mettreAJourProgression);
+formulaire.addEventListener("change", mettreAJourProgression);
 
 
 // VERIFICATION DES SPECIALITES
@@ -493,6 +892,49 @@ function verifierSpecialites() {
 }
 
 
+// VERIFICATION DU MOT DE PASSE CYCLADES
+
+const champMdp = document.getElementById("motdepasse");
+
+const REGLES_MDP = {
+  longueur: v => v.length >= 12 && v.length <= 30,
+  maj:      v => /[A-Z]/.test(v),
+  min:      v => /[a-z]/.test(v),
+  chiffre:  v => /[0-9]/.test(v),
+  special:  v => /['#!$%&()*+,\-.\/:;<=>?@\[\]^_{|}~]/.test(v)
+};
+
+function evaluerMotDePasse() {
+
+  const valeur = champMdp.value;
+  let toutesOk = true;
+
+  document.querySelectorAll("#regles li").forEach(li => {
+    const ok = REGLES_MDP[li.dataset.r](valeur);
+    li.classList.toggle("ok", ok);
+    if (!ok) toutesOk = false;
+  });
+
+  // Active le style rouge/vert natif et le blocage de l'envoi
+  champMdp.setCustomValidity(
+    toutesOk ? "" : "Le mot de passe ne respecte pas toutes les règles."
+  );
+
+  return toutesOk;
+}
+
+champMdp.addEventListener("input", evaluerMotDePasse);
+evaluerMotDePasse();
+
+// Bouton afficher / masquer
+document.getElementById("oeil").addEventListener("click", function() {
+  const visible = champMdp.type === "text";
+  champMdp.type = visible ? "password" : "text";
+  this.textContent = visible ? "Afficher" : "Masquer";
+  this.setAttribute("aria-label", visible ? "Afficher le mot de passe" : "Masquer le mot de passe");
+});
+
+
 // ENVOI DU FORMULAIRE
 
 formulaire.addEventListener("submit", async function(event) {
@@ -509,6 +951,16 @@ formulaire.addEventListener("submit", async function(event) {
   // VERIFICATION DES SPECIALITES
 
   if (!verifierSpecialites()) {
+    return;
+  }
+
+  // VERIFICATION DU MOT DE PASSE
+
+  if (!evaluerMotDePasse()) {
+    afficherMessage(
+      "Le mot de passe Cyclades ne respecte pas toutes les règles indiquées.",
+      "erreur"
+    );
     return;
   }
 
@@ -530,7 +982,7 @@ formulaire.addEventListener("submit", async function(event) {
 
     email: document.getElementById("email").value.trim(),
 
-    identifiant: document.getElementById("identifiant").value.trim()
+    motdepasse: document.getElementById("motdepasse").value
 
   };
 
@@ -545,7 +997,7 @@ formulaire.addEventListener("submit", async function(event) {
     !data.specialite2 ||
     !data.specialite3 ||
     !data.email ||
-    !data.identifiant
+    !data.motdepasse
   ) {
 
     afficherMessage(
@@ -576,6 +1028,7 @@ formulaire.addEventListener("submit", async function(event) {
   // DESACTIVATION DU BOUTON
 
   boutonEnvoyer.disabled = true;
+  boutonEnvoyer.classList.add("loading");
   boutonEnvoyer.textContent = "Envoi en cours...";
 
   afficherMessage(
@@ -627,6 +1080,7 @@ formulaire.addEventListener("submit", async function(event) {
   finally {
 
     boutonEnvoyer.disabled = false;
+    boutonEnvoyer.classList.remove("loading");
 
     boutonEnvoyer.textContent = "Envoyer mes informations";
 
