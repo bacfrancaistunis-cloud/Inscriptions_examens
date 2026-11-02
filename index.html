@@ -263,9 +263,22 @@ button.loading::before {
 }
 @keyframes tourne { to { transform: rotate(360deg); } }
 
-#ouvrirFormulaire.fait {
-  background: var(--vert-clair);
-  color: var(--vert);
+#panneau1.cache { display: none; }
+
+#panneau1 { animation: apparition .6s var(--ease) both; }
+
+button.retour {
+  width: auto;
+  margin: 18px 0 0;
+  padding: 6px 10px 6px 0;
+  background: none;
+  color: var(--gris);
+  font-size: 14px;
+  box-shadow: none;
+}
+button.retour:hover:not(:disabled) {
+  color: var(--bleu);
+  transform: translateX(-3px);
   box-shadow: none;
 }
 
@@ -321,30 +334,20 @@ button.oeil {
 }
 button.oeil:hover:not(:disabled) { background: var(--bleu-clair); transform: none; box-shadow: none; }
 
-.regles {
-  list-style: none;
+.erreur-mdp {
+  display: none;
   margin: 0 0 18px;
-  padding: 12px 14px;
-  background: #f8f9fc;
-  border: 1px solid #e3e8ef;
+  padding: 11px 14px;
   border-radius: 10px;
-  font-size: 13.5px;
-  color: var(--gris);
+  background: var(--rouge-clair);
+  border: 1px solid #f3c6c2;
+  color: var(--rouge);
+  font-size: 14px;
+  font-weight: 700;
 }
-.regles li { display: flex; gap: 8px; margin: 3px 0; transition: color .3s; }
-.regles li::before {
-  content: "○";
-  flex: none;
-  width: 16px;
-  text-align: center;
-  transition: transform .4s var(--ease);
-}
-.regles li.ok { color: var(--vert); font-weight: 600; }
-.regles li.ok::before { content: "✓"; animation: pop .4s var(--ease) both; }
-.regles code {
-  font-family: Consolas, monospace;
-  letter-spacing: .08em;
-  word-break: break-all;
+.erreur-mdp.visible {
+  display: block;
+  animation: secousse .45s var(--ease) both;
 }
 
 /* ---------- FORMULAIRE ---------- */
@@ -503,6 +506,10 @@ button.oeil:hover:not(:disabled) { background: var(--bleu-clair); transform: non
     <li class="step" id="etape2"><span>2</span>Formulaire</li>
   </ol>
 
+  <!-- ============ PANNEAU 1 : CREATION DU COMPTE ============ -->
+
+  <section id="panneau1">
+
   <!-- ETAPE 1 -->
 
   <div class="notice">
@@ -561,17 +568,21 @@ button.oeil:hover:not(:disabled) { background: var(--bleu-clair); transform: non
   <div class="notice">
     <strong>Étape 2 :</strong>
     Après avoir créé votre compte Cyclades,
-    merci de remplir le formulaire en cliquant
-    sur « J'ai créé mon compte ».
+    cliquez sur « Compte Cyclades créé »
+    pour accéder au formulaire d'inscription.
   </div>
 
   <button type="button" id="ouvrirFormulaire">
-    J'ai créé mon compte
+    Compte Cyclades créé
   </button>
 
-  <!-- FORMULAIRE -->
+  </section>
+
+  <!-- ============ PANNEAU 2 : FORMULAIRE ============ -->
 
   <form id="formulaire" novalidate>
+
+    <button type="button" class="retour" id="retour">← Retour</button>
 
     <div class="progression">
       <div class="progression-texte">
@@ -677,15 +688,9 @@ button.oeil:hover:not(:disabled) { background: var(--bleu-clair); transform: non
       <button type="button" class="oeil" id="oeil" aria-label="Afficher le mot de passe">Afficher</button>
     </div>
 
-    <ul class="regles" id="regles">
-      <li data-r="longueur">12 à 30 caractères</li>
-      <li data-r="maj">Au moins 1 majuscule</li>
-      <li data-r="min">Au moins 1 minuscule</li>
-      <li data-r="chiffre">Au moins 1 chiffre</li>
-      <li data-r="special">Au moins 1 caractère spécial :
-        <code>' # ! $ % &amp; ( ) * + , - . / : ; &lt; = &gt; ? @ [ ] ^ _ { | } ~</code>
-      </li>
-    </ul>
+    <div class="erreur-mdp" id="erreurMdp" role="alert">
+      Mot de passe incorrect ou compte Cyclades non créé !
+    </div>
 
     <div class="notice">
      Une fois ces informations transmises, nous procéderons à l'inscription du candidat. Le récapitulatif vous sera envoyé par e-mail, accompagné des prochaines étapes à suivre.
@@ -741,6 +746,8 @@ const resultat = document.getElementById("resultat");
 
 boutonOuvrir.addEventListener("click", function() {
 
+  // Le panneau 1 disparaît, le formulaire s'affiche seul
+  document.getElementById("panneau1").classList.add("cache");
   formulaire.classList.add("ouvert");
 
   // Indicateur d'étapes : étape 1 terminée, étape 2 active
@@ -748,16 +755,26 @@ boutonOuvrir.addEventListener("click", function() {
   document.getElementById("ligne").classList.add("pleine");
   document.getElementById("etape2").classList.add("active");
 
-  boutonOuvrir.classList.add("fait");
-  boutonOuvrir.textContent = "Compte Cyclades créé ✓";
-
-  formulaire.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
   // Place le curseur dans le premier champ
   setTimeout(() => document.getElementById("nom").focus({ preventScroll: true }), 600);
+
+});
+
+
+// RETOUR A L'ETAPE 1
+
+document.getElementById("retour").addEventListener("click", function() {
+
+  formulaire.classList.remove("ouvert");
+  document.getElementById("panneau1").classList.remove("cache");
+
+  document.getElementById("etape1").classList.replace("done", "active");
+  document.getElementById("ligne").classList.remove("pleine");
+  document.getElementById("etape2").classList.remove("active");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
 });
 
@@ -904,26 +921,34 @@ const REGLES_MDP = {
   special:  v => /['#!$%&()*+,\-.\/:;<=>?@\[\]^_{|}~]/.test(v)
 };
 
+const erreurMdp = document.getElementById("erreurMdp");
+
+// Le message n'apparaît qu'après le premier passage dans le champ
+// (ou une tentative d'envoi), pour ne pas gêner la saisie.
+let mdpTouche = false;
+
 function evaluerMotDePasse() {
 
   const valeur = champMdp.value;
-  let toutesOk = true;
-
-  document.querySelectorAll("#regles li").forEach(li => {
-    const ok = REGLES_MDP[li.dataset.r](valeur);
-    li.classList.toggle("ok", ok);
-    if (!ok) toutesOk = false;
-  });
+  const toutesOk = Object.values(REGLES_MDP).every(regle => regle(valeur));
 
   // Active le style rouge/vert natif et le blocage de l'envoi
   champMdp.setCustomValidity(
-    toutesOk ? "" : "Le mot de passe ne respecte pas toutes les règles."
+    toutesOk ? "" : "Mot de passe incorrect ou compte Cyclades non créé !"
   );
+
+  erreurMdp.classList.toggle("visible", mdpTouche && !toutesOk);
 
   return toutesOk;
 }
 
 champMdp.addEventListener("input", evaluerMotDePasse);
+
+champMdp.addEventListener("blur", function() {
+  mdpTouche = true;
+  evaluerMotDePasse();
+});
+
 evaluerMotDePasse();
 
 // Bouton afficher / masquer
@@ -944,6 +969,8 @@ formulaire.addEventListener("submit", async function(event) {
   // VERIFICATION DES CHAMPS
 
   if (!formulaire.checkValidity()) {
+    mdpTouche = true;
+    evaluerMotDePasse();
     formulaire.reportValidity();
     return;
   }
@@ -958,7 +985,7 @@ formulaire.addEventListener("submit", async function(event) {
 
   if (!evaluerMotDePasse()) {
     afficherMessage(
-      "Le mot de passe Cyclades ne respecte pas toutes les règles indiquées.",
+      "Mot de passe incorrect ou compte Cyclades non créé !",
       "erreur"
     );
     return;
